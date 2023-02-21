@@ -1,0 +1,102 @@
+function solveSudoku(board) {
+  // Check if the board is valid
+  if (!isValidBoard(board)) {
+    return false;
+  }
+
+  // Find an empty cell
+  const emptyCell = findEmptyCell(board);
+
+  // If there are no empty cells, the board is solved
+  if (!emptyCell) {
+    return true;
+  }
+
+  // Try to fill the empty cell with a valid number
+  for (let num = 1; num <= 9; num++) {
+    if (isValidPlacement(board, emptyCell[0], emptyCell[1], num)) {
+      board[emptyCell[0]][emptyCell[1]] = num;
+
+      // Recursively solve the board
+      if (solveSudoku(board)) {
+        return true;
+      }
+
+      // If the recursive call returns false, backtrack and try the next number
+      board[emptyCell[0]][emptyCell[1]] = 0;
+    }
+  }
+
+  // If no number worked, the board is unsolvable
+  return false;
+}
+
+function isValidBoard(board) {
+  // Check that each row, column, and region contains unique numbers
+  for (let i = 0; i < 9; i++) {
+    const row = new Set();
+    const col = new Set();
+    const region = new Set();
+
+    for (let j = 0; j < 9; j++) {
+      // Check row
+      if (board[i][j] !== 0 && row.has(board[i][j])) {
+        return false;
+      }
+      row.add(board[i][j]);
+
+      // Check column
+      if (board[j][i] !== 0 && col.has(board[j][i])) {
+        return false;
+      }
+      col.add(board[j][i]);
+
+      // Check region
+      const regionRow = Math.floor(i / 3) * 3 + Math.floor(j / 3);
+      const regionCol = (i % 3) * 3 + (j % 3);
+      if (board[regionRow][regionCol] !== 0 && region.has(board[regionRow][regionCol])) {
+        return false;
+      }
+      region.add(board[regionRow][regionCol]);
+    }
+  }
+
+  // If the board is valid, return true
+  return true;
+}
+
+function findEmptyCell(board) {
+  // Find the first empty cell
+  for (let i = 0; i < 9; i++) {
+    for (let j = 0; j < 9; j++) {
+      if (board[i][j] === 0) {
+        return [i, j];
+      }
+    }
+  }
+
+  // If there are no empty cells, return null
+  return null;
+}
+
+function isValidPlacement(board, row, col, num) {
+  // Check row
+  for (let i = 0; i < 9; i++) {
+    if (board[row][i] === num) {
+      return false;
+    }
+  }
+
+  // Check column
+  for (let i = 0; i < 9; i++) {
+    if (board[i][col] === num) {
+      return false;
+    }
+  }
+
+  // Check region
+  const regionRow = Math.floor(row / 3) * 3;
+  const regionCol = Math.floor(col / 3) * 3;
+  for (let i = regionRow; i < regionRow + 3; i++) {
+    for (let j = regionCol; j < regionCol + 3; j++) {
+      if
